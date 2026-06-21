@@ -1,0 +1,34 @@
+# mkdocs.yml lives at the REPO ROOT.
+# Builds a searchable site with a left sidebar from the existing /docs markdown.
+# Preview locally with:  pip install mkdocs-material && mkdocs serve
+
+site_name: Warvest Engineering Docs
+site_description: Standards, decisions, and architecture for Warvest
+
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - navigation.expand
+    - navigation.indexes
+    - navigation.top
+    - navigation.instant
+    - search.suggest
+    - content.code.copy
+  palette:
+    scheme: slate
+
+plugins:
+  - search
+  - gen-files:
+      scripts:
+        - scripts/gen_nav.py
+  - literate-nav:
+      nav_file: SUMMARY.md
+
+markdown_extensions:
+  - admonition
+  - toc:
+      permalink: true
+  - pymdownx.superfences
+  - pymdownx.highlight

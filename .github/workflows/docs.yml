@@ -1,0 +1,44 @@
+# .github/workflows/docs.yml
+# Builds the MkDocs site and deploys it to GitHub Pages.
+# Only runs when docs/ or mkdocs.yml change on the production branch,
+# so the published site always reflects REVIEWED, MERGED docs — no
+# separate repo, no unreviewed edits.
+name: docs
+
+on:
+  push:
+    branches: [develop]
+    paths:
+      - "docs/**"
+      - "mkdocs.yml"
+      - "scripts/gen_nav.py"
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@f677139bbe7f9c3f374f8ea5cfd09ec8c1f10e2c # v5
+        with:
+          python-version: "3.x"
+      - run: pip install mkdocs-material
+      - run: mkdocs build           # outputs to ./site
+      - uses: actions/configure-pages@983d7736951b59cdb3b142c8992fa54894d919b08 # v5
+      - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
+        with:
+          path: site
+      - id: deployment
+        uses: actions/deploy-pages@d6db90164dcc165df60731893b3d5d0f45f8106c # v4
