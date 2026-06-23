@@ -1,8 +1,8 @@
 # Coding Standards (C# & Unity)
 
 > **Audience:** Engineers (Unity + backend). Artists do not need this doc — see `ASSET_NAMING_CONVENTIONS.md`.
-> **Owner:** Amera (Tech Lead). **Changes:** open a PR against this file; one approver.
-> **Last reviewed:** 2026-06 · **Status:** Living
+> **Owner:** Amera (Tech Lead). 
+> **Status:** Living.
 >
 > Formatting (whitespace, braces, `var`, naming casing) is **enforced by `.editorconfig` + Roslyn analyzers**, not by this doc. This doc covers only what tooling cannot enforce: intent, architecture, and the judgment calls. If you find yourself documenting something a formatter handles, delete it and put it in `.editorconfig` instead.
 
@@ -53,15 +53,22 @@ Namespaces mirror folders and assemblies: `Warforge.Warvest.<Module>[.<Sub>]`, e
 This is the section that actually matters for a large mobile strategy game. A clean-but-allocating codebase will hitch on mid-tier Android.
 
 - **No per-frame heap allocations.** No `LINQ`, no `foreach` over allocating enumerators, no `string` concatenation, no lambdas that capture, in any code on the per-frame or per-tick path. Profile with the Memory Profiler; the GC alloc column should be flat during steady-state gameplay.
+
 - **Pool everything that spawns repeatedly** — projectiles, VFX, unit instances, UI list items. No `Instantiate`/`Destroy` in gameplay loops. Standardize on one pooling utility; don't let three engineers write three pools.
+
 - **Prefer `struct` for small, short-lived data; avoid boxing.** Watch implicit boxing through `object`, `IEnumerable`, and string formatting.
+
 - **Tick, don't `Update`.** Thousands of `MonoBehaviour.Update()` calls have real overhead. Route updatable systems through a central ticker/manager. (This is also the seam where DOTS/ECS earns its place — see §6.)
+
 - **String discipline.** Cache or `StringBuilder`; never build UI strings every frame. Localization keys are constants, not inline literals.
 
 ## 5. Async, threading, logging, errors
 
-- Backend/Jenkins-driven services are async end to end. Surface failures as typed results, not exceptions, on expected paths (network down is expected, not exceptional).
+- Backend/Jenkins-driven services are async end to end. Surface failures as typed results, not exceptions, on expected paths (network down is 
+expected, not exceptional).
+
 - **Logging:** use the project log wrapper, not raw `Debug.Log`. Wrap verbose logs in `[Conditional("WARVEST_VERBOSE")]` so they compile out of release. Shipping log spam is both a perf and a security leak.
+
 - **Null checks** at module boundaries (public API of an `.asmdef`); trust internal invariants rather than defensively null-checking everything.
 
 ## 6. DOTS / ECS (PROVISIONAL — pending the architecture spike)

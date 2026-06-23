@@ -9,7 +9,6 @@ theme:
   name: material
   features:
     - navigation.sections
-    - navigation.expand
     - navigation.indexes
     - navigation.top
     - navigation.instant
@@ -22,7 +21,7 @@ plugins:
   - search
   - gen-files:
       scripts:
-        - scripts/gen_nav.py
+        - scripts/gen_docs_nav.py
   - literate-nav:
       nav_file: SUMMARY.md
 

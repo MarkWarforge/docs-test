@@ -6,7 +6,7 @@
 - **Status:** Proposed | Accepted | Superseded by ADR-XXXX | Deprecated
 - **Date:** YYYY-MM-DD
 - **Deciders:** names
-- **Related:** TDD-XXX, ClickUp #, ADR-XXXX
+- **Related:** ClickUp #, ADR-XXXX
 
 ## Context
 
