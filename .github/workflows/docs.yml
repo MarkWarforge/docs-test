@@ -1,17 +1,25 @@
 # .github/workflows/docs.yml
 # Builds the MkDocs site and deploys it to GitHub Pages.
-# Only runs when docs/ or mkdocs.yml change on the production branch,
+# Only runs when docs/ or mkdocs.yml change on the develop branch,
 # so the published site always reflects REVIEWED, MERGED docs — no
 # separate repo, no unreviewed edits.
 name: docs
 
 on:
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: "Reason for running this workflow"
+        required: false
+        default: "Manual testing"
   push:
     branches: [develop]
     paths:
+      - '.github/workflows/docs.yml'
       - "docs/**"
       - "mkdocs.yml"
-      - "scripts/gen_nav.py"
+      - "scripts/gen_docs_nav.py"
+
 permissions:
   contents: read
   pages: write
@@ -27,16 +35,29 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repo with Git LFS
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          lfs: true
+
       - uses: actions/setup-python@v5
         with:
           python-version: "3.x"
-      - run: pip install mkdocs-material mkdocs-gen-files mkdocs-literate-nav
-      - run: mkdocs build           # outputs to ./site
+
+      - name: Install MkDocs dependencies
+        run: pip install mkdocs-material mkdocs-gen-files mkdocs-literate-nav
+
+      - name: Build site
+        run: mkdocs build
+
       - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+
+      - uses: actions/upload-pages-artifact@v4
         with:
           path: site
+
       - id: deployment
         uses: actions/deploy-pages@v4
